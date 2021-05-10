@@ -24,7 +24,7 @@ resource "aws_vpc" "bc-dev-vpc" {
 
 //creating subnet in vpc1
 resource "aws_subnet" "bc-dev-subnet1" {
-  vpc_id = aws_vpc.bc-dev-vpc.id
+  vpc_id = aws_vpc.bc-dev-vpc1.id
 
   cidr_block = "10.0.0.0/16"
 
@@ -35,7 +35,7 @@ resource "aws_subnet" "bc-dev-subnet1" {
 
 //creating internet gateway which provides access from outside via internet
 resource "aws_internet_gateway" "gateway" {
-  vpc_id = aws_vpc.bc-dev-vpc.id
+  vpc_id = aws_vpc.bc-dev-vpc1.id
 
   tags = {
     Name = "gateway"
@@ -44,7 +44,7 @@ resource "aws_internet_gateway" "gateway" {
 
 //creating route table that routes the traffic 
 resource "aws_route_table" "route-table" {
-  vpc_id = aws_vpc.bc-dev-vpc.id
+  vpc_id = aws_vpc.bc-dev-vpc1.id
 
   tags = {
     Name = "Main route table"
@@ -69,7 +69,7 @@ resource "aws_route_table_association" "internet-gateway" {
 resource "aws_security_group" "sec-group" {
   name        = "allow_traffic"
   description = "Allow ssh,http & tcp(appln)"
-  vpc_id      = aws_vpc.bc-dev-vpc.id
+  vpc_id      = aws_vpc.bc-dev-vpc1.id
 
   ingress {
     description = "HTTP port"
@@ -121,15 +121,24 @@ data "aws_ami" "ubuntu" {
     owners = ["099720109477"] # Canonical
 }
 
-resource "aws_instance" "bc-tf-dev" {
-//  count = 10
-  ami           = data.aws_ami.ubuntu.id
+//resource "aws_instance" "bc-tf-dev" {
+////  count = 10
+//  ami           = data.aws_ami.ubuntu.id
+//  subnet_id = aws_subnet.bc-dev-subnet1.id
+//  vpc_security_group_ids = [aws_security_group.sec-group.id]
+//  associate_public_ip_address = true
+//  instance_type = "t2.micro"
+//  tags = {
+//    Name = "bc-tf-dev"
+//  }
+//}
+
+module "ec2_instance" {
+  source = "./modules/ec2"
+
+  ami = data.aws_ami.ubuntu.id
   subnet_id = aws_subnet.bc-dev-subnet1.id
   vpc_security_group_ids = [aws_security_group.sec-group.id]
   associate_public_ip_address = true
   instance_type = "t2.micro"
-  tags = {
-    Name = "bc-tf-dev"
-  }
 }
-
