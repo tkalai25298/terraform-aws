@@ -14,6 +14,7 @@ provider "aws" {
 
 //creating custom vpc1
 resource "aws_vpc" "bc-dev-vpc" {
+  
   cidr_block = "10.0.0.0/16"
 
   tags =  {
@@ -25,7 +26,7 @@ resource "aws_vpc" "bc-dev-vpc" {
 resource "aws_subnet" "bc-dev-subnet1" {
   vpc_id = aws_vpc.bc-dev-vpc.id
 
-  cidr_block = "10.0.0.0/24"
+  cidr_block = "10.0.0.0/16"
 
   tags =  {
      Name = "bc-dev-subnet1"
@@ -125,6 +126,7 @@ resource "aws_instance" "bc-tf-dev" {
   ami           = data.aws_ami.ubuntu.id
   subnet_id = aws_subnet.bc-dev-subnet1.id
   vpc_security_group_ids = [aws_security_group.sec-group.id]
+  associate_public_ip_address = true
   instance_type = "t2.micro"
   tags = {
     Name = "bc-tf-dev"
