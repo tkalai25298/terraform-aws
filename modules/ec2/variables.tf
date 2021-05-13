@@ -36,3 +36,9 @@ variable "instance_type" {
   description = "The type of machine, as i  the specification of the vm."
   type = string
 }
+
+variable "tag_name" {
+  type = string
+  description = "tag for the ec2 instance server"
+  default = "bc-tf-aws-dev"
+}

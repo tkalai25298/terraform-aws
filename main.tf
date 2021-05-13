@@ -7,70 +7,18 @@ terraform {
   }
 }
 
+
+locals {
+  region = "eu-west-2"
+  availability = "eu-west-2a"
+  tag_name = "bc-tf-aws-dev"
+}
+
 provider "aws" {
   profile = "default"
   region  = local.region
 }
 
-locals {
-  region = "eu-west-2"
-  availability = "eu-west-2a"
-}
-
-//creating custom vpc1
-data "aws_vpc" "default" {
-  default = true
-}
-
-//creating subnet in vpc1
-data "aws_subnet" "default" {
-  vpc_id = data.aws_vpc.default.id
-  availability_zone = local.availability
-}
-
-
-//security groups for ssh(22),http(80),appln(tcp-8080) & outbound traffic(anyprotocol=-1)
-resource "aws_security_group" "sec-group" {
-  name        = "allow_traffic_1"
-  description = "Allow ssh,http & tcp(appln)"
-  vpc_id      = data.aws_vpc.default.id
-
-  ingress {
-    description = "HTTP port"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description = "SSH to instance"
-    from_port = 22
-    to_port = 22
-    protocol = "tcp"
-    cidr_blocks = [
-      "0.0.0.0/0"]
-  }
-
-  ingress {
-    description = "httpd helloworld"
-    from_port = 8080
-    protocol = "tcp"
-    to_port = 8080
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "sec-group"
-  }
-}
 
 //creating ec1 instance in vpc1 - subnet1
 data "aws_ami" "ubuntu" {
@@ -86,12 +34,67 @@ data "aws_ami" "ubuntu" {
     owners = ["099720109477"] # Canonical
 }
 
+module "vpc" {
+  source = "./modules/vpc"
+
+  default = true
+}
+
+module "subnet" {
+  source = "./modules/subnet"
+
+  vpc_id = module.vpc.vpc-id
+  availability_zone = local.availability
+
+}
+
+module "sec-groups" {
+  source = "./modules/sec-groups"
+
+  name = "allow_traffic_random"
+  description = "allow ssh,http & tcp"
+  vpc_id = module.vpc.vpc-id
+  tag_name = local.tag_name
+
+  ingress_rules = [{
+    description = "HTTP port"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  },
+    {
+    description = "SSH to instance"
+    from_port = 22
+    to_port = 22
+    protocol = "tcp"
+    cidr_blocks = [
+      "0.0.0.0/0"]
+  },
+    {
+    description = "httpd helloworld"
+    from_port = 8080
+    protocol = "tcp"
+    to_port = 8080
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ]
+  egress_rules = [{
+    description = "allow all"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }]
+
+}
 
 module "ec2_instance" {
  source = "./modules/ec2"
 
   ami = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
-  sec_groups = aws_security_group.sec-group.id
-  subnet_id = data.aws_subnet.default.id
+  sec_groups = module.sec-groups.subnet_id
+  subnet_id = module.subnet.subnet_id
+  tag_name = local.tag_name
 }

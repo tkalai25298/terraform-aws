@@ -5,7 +5,7 @@ resource "aws_instance" "bc-tf-dev" {
   associate_public_ip_address = var.public_ip
   instance_type = var.instance_type
    tags = {
-    Name = "bc-tf-dev"
+    Name = var.tag_name
   }
    user_data = <<EOF
 #!/bin/bash
