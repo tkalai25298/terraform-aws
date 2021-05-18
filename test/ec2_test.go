@@ -6,10 +6,13 @@ import (
 	"time"
 
 	http_helper "github.com/gruntwork-io/terratest/modules/http-helper"
+	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 )
 
 func TestEC2instance(t *testing.T) {
+
+	logger.Log(t,"---Testing ec2 instance with web server---")
 	//creating terraformOptions with retryable errors 
 	terraformOptions := terraform.WithDefaultRetryableErrors(t,&terraform.Options{
 		TerraformDir: "../",

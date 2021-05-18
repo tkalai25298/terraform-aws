@@ -20,20 +20,6 @@ provider "aws" {
 }
 
 
-//creating ec1 instance in vpc1 - subnet1
-data "aws_ami" "ubuntu" {
-    most_recent = true
-    filter {
-        name   = "name"
-        values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
-    }
-    filter {
-        name   = "virtualization-type"
-        values = ["hvm"]
-    }
-    owners = ["099720109477"] # Canonical
-}
-
 module "vpc" {
   source = "./modules/vpc"
 
@@ -89,10 +75,14 @@ module "sec-groups" {
 
 }
 
+module "ami" {
+  source = "./modules/ubuntu-image"
+}
+
 module "ec2_instance" {
  source = "./modules/ec2"
 
-  ami = data.aws_ami.ubuntu.id
+  ami = module.ami.ami
   instance_type = "t2.micro"
   sec_groups = module.sec-groups.subnet_id
   subnet_id = module.subnet.subnet_id
