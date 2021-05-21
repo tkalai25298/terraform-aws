@@ -9,8 +9,9 @@ resource "aws_instance" "bc-tf-dev" {
   }
    user_data = <<EOF
 #!/bin/bash
-echo "Hello, World!" > index.html
-nohup busybox httpd -f -p 8080 &
+
+sudo systemctl enable pritunl mongodb
+sudo systemctl start pritunl mongodb
 EOF
 }
 

@@ -37,7 +37,7 @@ module "subnet" {
 module "sec-groups" {
   source = "./modules/sec-groups"
 
-  name = "allow_traffic_random"
+  name = "allow_traffic_bc_dev"
   description = "allow ssh,http & tcp"
   vpc_id = module.vpc.vpc-id
   tag_name = local.tag_name
@@ -58,10 +58,10 @@ module "sec-groups" {
       "0.0.0.0/0"]
   },
     {
-    description = "httpd helloworld"
-    from_port = 8080
+    description = "pritunl server"
+    from_port = 443
     protocol = "tcp"
-    to_port = 8080
+    to_port = 443
     cidr_blocks = ["0.0.0.0/0"]
   }
   ]
@@ -73,6 +73,7 @@ module "sec-groups" {
     cidr_blocks = ["0.0.0.0/0"]
   }]
 
+
 }
 
 module "ami" {
@@ -82,7 +83,7 @@ module "ami" {
 module "ec2_instance" {
  source = "./modules/ec2"
 
-  ami = module.ami.ami
+  ami = "ami-01590a054824e5e42"
   instance_type = "t2.micro"
   sec_groups = module.sec-groups.subnet_id
   subnet_id = module.subnet.subnet_id
