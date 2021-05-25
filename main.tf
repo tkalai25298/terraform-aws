@@ -63,6 +63,13 @@ module "sec-groups" {
     protocol = "tcp"
     to_port = 443
     cidr_blocks = ["0.0.0.0/0"]
+  },
+    {
+    description = "pritunl client "
+    from_port = 17229
+    protocol = "udp"
+    to_port = 17229
+    cidr_blocks = ["0.0.0.0/0"]
   }
   ]
   egress_rules = [{
@@ -71,9 +78,8 @@ module "sec-groups" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
-  }]
-
-
+  }
+  ]
 }
 
 module "ami" {
