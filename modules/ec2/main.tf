@@ -7,11 +7,11 @@ resource "aws_instance" "bc-tf-dev" {
    tags = {
     Name = var.tag_name
   }
-   user_data = <<EOF
-#!/bin/bash
+//    user_data = <<EOF
+// #!/bin/bash
 
-sudo systemctl enable pritunl mongodb
-sudo systemctl start pritunl mongodb
-EOF
+// sudo systemctl enable pritunl mongodb
+// sudo systemctl start pritunl mongodb
+// EOF
 }
 
