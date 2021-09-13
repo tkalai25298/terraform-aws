@@ -1,4 +1,4 @@
-resource "aws_security_group" "sec-groups" {
+resource "aws_security_group" "sec-groups-for-ec2" {
   name = var.name
   vpc_id = var.vpc_id
 

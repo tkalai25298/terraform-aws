@@ -1,0 +1,75 @@
+---
+- name: Setup consul
+  hosts: all
+  vars:
+    consul_config_dir: "/etc/consul.d"
+    listen_addr: "0.0.0.0"
+    consul_ver: 1.9.3
+    consul_storgae_dir: /opt/consul
+    # bind_addr: "\"{{ GetPrivateIP }}\""
+    https_port: 8501
+    grpc_port: 8502
+
+  tasks:
+    - name: Install Dependencies
+      apt:
+        name: unzip
+        state: present
+        update_cache: yes
+      become: true
+
+    - name: Get consul
+      get_url:
+        url: "https://releases.hashicorp.com/consul/{{ consul_ver }}/consul_{{ consul_ver }}_linux_amd64.zip"
+        dest: "/tmp/consul_{{ consul_ver }}_linux_amd64.zip"
+      become: true
+      register: consul_download
+
+    - name: unzip consul
+      unarchive:
+        src: "{{ consul_download.dest }}"
+        dest: /usr/local/bin
+        copy: no
+        owner: root
+        group: root
+        mode: 0755
+      become: true
+
+    - name: Consul config directory
+      file:
+        path: "{{ consul_config_dir }}"
+        state: directory
+        owner: root
+        group: root
+        mode: 0644
+      become: true
+
+    - name: Consul storage directory
+      file:
+        path: "{{ consul_storgae_dir }}"
+        state: directory
+        owner: root
+        group: root
+        mode: 0644
+      become: true
+
+    - name: Template consul config
+      template:
+        src: consul.hcl.j2
+        dest: "{{ consul_config_dir }}/consul.hcl"
+        owner: root
+        group: root
+      become: true
+
+    - name: Setup service
+      template:
+        src: consul.service.j2
+        dest: /etc/systemd/system/consul.service
+        owner: root
+        group: root
+      become: true
+
+    - name: system.d deamon reload
+      systemd:
+        daemon_reload: true
+      become: true

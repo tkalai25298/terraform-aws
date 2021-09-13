@@ -58,7 +58,7 @@ variable "egress_rules" {
 }
 
 variable "tag_name" {
-  default = "bc-tf-aws-sec-groups"
+  default = "consul-redis-sec-groups"
   description = "tag for security groups"
   type = string
 }

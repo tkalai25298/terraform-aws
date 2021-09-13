@@ -1,0 +1,14 @@
+datacenter = "{DATACENTER}"
+data_dir = "{{ consul_storgae_dir }}"
+#consulclient
+client_addr = "{{ listen_addr }}",
+advertise_addr = "{PRIVATE-IPV4}",
+server = false,
+retry_join = ["provider=aws tag_key={AWS_TAG} tag_value={AWS_KEY}"]
+ports {
+  https = {{ https_port }}
+  grpc = {{ grpc_port }}
+}
+connect {
+  enabled = true
+}

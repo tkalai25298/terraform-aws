@@ -11,7 +11,8 @@ terraform {
 locals {
   region = "eu-west-2"
   availability = "eu-west-2a"
-  tag_name = "bc-tf-aws-dev"
+  tag_name = "consul-redis"
+  instance_count = "1"
 }
 
 provider "aws" {
@@ -37,7 +38,7 @@ module "subnet" {
 module "sec-groups" {
   source = "./modules/sec-groups"
 
-  name = "allow_traffic_random"
+  name = "allow_traffic_ec2_consul_redis"
   description = "allow ssh,http & tcp"
   vpc_id = module.vpc.vpc-id
   tag_name = local.tag_name
@@ -58,10 +59,59 @@ module "sec-groups" {
       "0.0.0.0/0"]
   },
     {
-    description = "httpd helloworld"
-    from_port = 8080
+    description = "orderer port"
+    from_port = 7050
     protocol = "tcp"
-    to_port = 8080
+    to_port = 7050
+    cidr_blocks = ["0.0.0.0/0"]
+  },
+    {
+    description = "Peer 1 port"
+    from_port = 7051
+    protocol = "tcp"
+    to_port = 7051
+    cidr_blocks = ["0.0.0.0/0"]
+  },
+    {
+    description = "Peer2 port"
+    from_port = 7052
+    protocol = "tcp"
+    to_port = 7052
+    cidr_blocks = ["0.0.0.0/0"]
+  },
+    {
+    description = "chaincode port"
+    from_port = 7053
+    protocol = "tcp"
+    to_port = 7053
+    cidr_blocks = ["0.0.0.0/0"]
+  },
+    {
+    description = "port"
+    from_port = 7054
+    protocol = "tcp"
+    to_port = 7054
+    cidr_blocks = ["0.0.0.0/0"]
+  },
+    {
+    description = "Vault port"
+    from_port = 8200
+    protocol = "tcp"
+    to_port = 8200
+    cidr_blocks = ["0.0.0.0/0"]
+  },
+    {
+    description = "redis port"
+    from_port = 6379
+    protocol = "tcp"
+    to_port = 6379
+    cidr_blocks = ["0.0.0.0/0"]
+  },
+   {
+    description = "consul LAN port"
+    from_port = 8301
+    protocol = "tcp"
+    to_port = 8301
     cidr_blocks = ["0.0.0.0/0"]
   }
   ]
@@ -73,18 +123,26 @@ module "sec-groups" {
     cidr_blocks = ["0.0.0.0/0"]
   }]
 
+
 }
 
 module "ami" {
   source = "./modules/ubuntu-image"
 }
 
+module "iam" {
+  source = "./modules/IAM"
+}
+
 module "ec2_instance" {
  source = "./modules/ec2"
-
-  ami = module.ami.ami
-  instance_type = "t2.micro"
+ instance_count = local.instance_count
+  ami = "ami-06fe529d17b49592a"
+  instance_type = "t3.medium"
   sec_groups = module.sec-groups.subnet_id
   subnet_id = module.subnet.subnet_id
   tag_name = local.tag_name
+  volume_size = "10"
+  instance_profile = module.iam.instance_profile
+
 }

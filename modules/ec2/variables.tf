@@ -1,3 +1,19 @@
+variable "instance_count" {
+  default = "1"
+  type = number
+}
+
+variable "volume_size" {
+  default = "30"
+  description = "volume size for aws-instance"
+  type = number
+}
+
+variable "instance_tags" {
+  type = string
+  default = "consul-redis"
+}
+
 variable "ami" {
   description = "ami image to run instance"
   type = string
@@ -40,5 +56,27 @@ variable "instance_type" {
 variable "tag_name" {
   type = string
   description = "tag for the ec2 instance server"
-  default = "bc-tf-aws-dev"
+  default = "consul-redis"
+}
+
+variable "redis_consul_tag" {
+  type = string
+  description = "tag for redis-consul cluster"
+  default = "playground"
+}
+
+variable "redis_consul_key" {
+  type = string
+  description = "key for redis-consul cluster"
+  default = "server"
+}
+
+variable "region" {
+  type = string
+  default = "gcp-eu-west-2"
+}
+
+variable "instance_profile" {
+  type = string
+  description = "aws IAM policy"
 }

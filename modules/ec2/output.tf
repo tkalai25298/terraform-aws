@@ -1,3 +1,3 @@
-output "instance_id" {
-  value = aws_instance.bc-tf-dev.public_ip
+output "ec2-instance-public-ip" {
+  value = aws_instance.my_instance
 }
