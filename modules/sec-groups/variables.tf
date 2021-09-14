@@ -62,8 +62,3 @@ variable "tag_name" {
   description = "tag for security groups"
   type = string
 }
-
-variable "server-sec-group-id"{
-  type = string
-   description = "id of consul server security groups"
-}

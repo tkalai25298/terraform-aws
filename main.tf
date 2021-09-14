@@ -35,6 +35,8 @@ provider "aws" {
 
 // }
 
+
+
 module "sec-groups" {
   source = "./modules/sec-groups"
 
@@ -42,7 +44,7 @@ module "sec-groups" {
   description = "allow ssh,http & tcp"
   vpc_id = "vpc-077aadb9eec98c1b6"
   tag_name = local.tag_name
-  server-sec-group-id = "sg-0ab243b9a8800a6a4"
+  // server-sec-group-id = "sg-0ab243b9a8800a6a4"
 
   ingress_rules = [
   {
@@ -96,6 +98,15 @@ module "sec-groups" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }]
+}
+
+module "inter-com" {
+  source = "./modules/inter-com"
+
+  source_sec_group_1 = "sg-0ab243b9a8800a6a4"
+  source_sec_group_2 = module.sec-groups.SecGroup
+  from_port          = 8300
+  to_port            = 8600
 }
 
 module "ami" {
