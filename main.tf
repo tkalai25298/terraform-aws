@@ -42,8 +42,17 @@ module "sec-groups" {
   description = "allow ssh,http & tcp"
   vpc_id = module.vpc.vpc-id
   tag_name = local.tag_name
+  server-sec-group-id = "sg-0ab243b9a8800a6a4"
 
-  ingress_rules = [{
+  ingress_rules = [
+  {
+    description = "ping"
+    from_port   = 8
+    to_port     = 8
+    protocol    = "icmp"
+    cidr_blocks = ["0.0.0.0/0"]
+  },
+  {
     description = "HTTP port"
     from_port   = 80
     to_port     = 80
@@ -57,48 +66,6 @@ module "sec-groups" {
     protocol = "tcp"
     cidr_blocks = [
       "0.0.0.0/0"]
-  },
-    {
-    description = "orderer port"
-    from_port = 7050
-    protocol = "tcp"
-    to_port = 7050
-    cidr_blocks = ["0.0.0.0/0"]
-  },
-    {
-    description = "Peer 1 port"
-    from_port = 7051
-    protocol = "tcp"
-    to_port = 7051
-    cidr_blocks = ["0.0.0.0/0"]
-  },
-    {
-    description = "Peer2 port"
-    from_port = 7052
-    protocol = "tcp"
-    to_port = 7052
-    cidr_blocks = ["0.0.0.0/0"]
-  },
-    {
-    description = "chaincode port"
-    from_port = 7053
-    protocol = "tcp"
-    to_port = 7053
-    cidr_blocks = ["0.0.0.0/0"]
-  },
-    {
-    description = "port"
-    from_port = 7054
-    protocol = "tcp"
-    to_port = 7054
-    cidr_blocks = ["0.0.0.0/0"]
-  },
-    {
-    description = "Vault port"
-    from_port = 8200
-    protocol = "tcp"
-    to_port = 8200
-    cidr_blocks = ["0.0.0.0/0"]
   },
     {
     description = "redis port"
@@ -120,7 +87,8 @@ module "sec-groups" {
     protocol = "tcp"
     to_port = 8500
     cidr_blocks = ["0.0.0.0/0"]
-  } ]
+  } 
+  ]
   egress_rules = [{
     description = "allow all"
     from_port   = 0
@@ -128,8 +96,6 @@ module "sec-groups" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }]
-
-
 }
 
 module "ami" {
