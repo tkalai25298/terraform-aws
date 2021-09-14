@@ -21,26 +21,26 @@ provider "aws" {
 }
 
 
-module "vpc" {
-  source = "./modules/vpc"
+// module "vpc" {
+//   source = "./modules/vpc"
 
-  default = true
-}
+//   default = true
+// }
 
-module "subnet" {
-  source = "./modules/subnet"
+// module "subnet" {
+//   source = "./modules/subnet"
 
-  vpc_id = module.vpc.vpc-id
-  availability_zone = local.availability
+//   vpc_id = module.vpc.vpc-id
+//   availability_zone = local.availability
 
-}
+// }
 
 module "sec-groups" {
   source = "./modules/sec-groups"
 
   name = "allow_traffic_ec2_consul_redis"
   description = "allow ssh,http & tcp"
-  vpc_id = module.vpc.vpc-id
+  vpc_id = "vpc-077aadb9eec98c1b6"
   tag_name = local.tag_name
   server-sec-group-id = "sg-0ab243b9a8800a6a4"
 
@@ -112,7 +112,7 @@ module "ec2_instance" {
   ami = "ami-02aa596c783234844"
   instance_type = "t3.medium"
   sec_groups = module.sec-groups.SecGroup
-  subnet_id = module.subnet.subnet_id
+  subnet_id = "subnet-042c326a2a2f6e537"
   tag_name = local.tag_name
   volume_size = "10"
   instance_profile = module.iam.instance_profile
