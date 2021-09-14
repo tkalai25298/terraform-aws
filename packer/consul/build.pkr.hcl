@@ -67,6 +67,9 @@ build {
     provisioner "ansible" {
         playbook_file = "./ansible/consul.yml"
     }
+    provisioner "ansible" {
+        playbook_file = "./ansible/redis.yml"
+    }
 
 }
 

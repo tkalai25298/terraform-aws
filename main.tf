@@ -113,8 +113,14 @@ module "sec-groups" {
     protocol = "tcp"
     to_port = 8301
     cidr_blocks = ["0.0.0.0/0"]
-  }
-  ]
+  },
+  {
+    description = "consul HTTP port"
+    from_port = 8500
+    protocol = "tcp"
+    to_port = 8500
+    cidr_blocks = ["0.0.0.0/0"]
+  } ]
   egress_rules = [{
     description = "allow all"
     from_port   = 0
@@ -137,9 +143,9 @@ module "iam" {
 module "ec2_instance" {
  source = "./modules/ec2"
  instance_count = local.instance_count
-  ami = "ami-06fe529d17b49592a"
+  ami = "ami-02aa596c783234844"
   instance_type = "t3.medium"
-  sec_groups = module.sec-groups.subnet_id
+  sec_groups = module.sec-groups.SecGroup
   subnet_id = module.subnet.subnet_id
   tag_name = local.tag_name
   volume_size = "10"

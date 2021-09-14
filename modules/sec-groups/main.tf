@@ -26,3 +26,12 @@ resource "aws_security_group" "sec-groups-for-ec2" {
     Name = var.tag_name
   }
 }
+
+resource "aws_security_group_rule" "self_inter_com_ec2" {
+  from_port         = 0
+  protocol          = "-1"
+  security_group_id = aws_security_group.sec-groups-for-ec2.id
+  to_port           = 0
+  self              = true
+  type              = "ingress"
+}
