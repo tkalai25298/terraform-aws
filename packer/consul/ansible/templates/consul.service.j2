@@ -3,7 +3,7 @@ Description=Consul Client
 After=network.target
 
 [Service]
-ExecStart=/usr/local/bin/consul agent -config-file={{ consul_config_dir }}/consul.hcl
+ExecStart=/usr/local/bin/consul agent -config-file={{ consul_config_dir }}
 ExecReload=/bin/kill -9 $MAINPID
 KillSignal=SIGTERM
 Restart=on-failure

@@ -100,13 +100,23 @@ module "sec-groups" {
   }]
 }
 
-module "inter-com" {
+module "inter-com-server-com" {
   source = "./modules/inter-com"
 
   source_sec_group_1 = "sg-0ab243b9a8800a6a4"
   source_sec_group_2 = module.sec-groups.SecGroup
   from_port          = 8300
   to_port            = 8600
+}
+
+
+module "inter-com-client-com" {
+  source = "./modules/inter-com"
+
+  source_sec_group_1 = "sg-060c683684f9d81d1"
+  source_sec_group_2 = module.sec-groups.SecGroup
+  from_port          = 6379
+  to_port            = 6379
 }
 
 module "ami" {
@@ -120,12 +130,11 @@ module "iam" {
 module "ec2_instance" {
  source = "./modules/ec2"
  instance_count = local.instance_count
-  ami = "ami-02aa596c783234844"
+  ami = "ami-08706840def53b5d9"
   instance_type = "t3.medium"
   sec_groups = module.sec-groups.SecGroup
   subnet_id = "subnet-042c326a2a2f6e537"
   tag_name = local.tag_name
   volume_size = "10"
   instance_profile = module.iam.instance_profile
-
 }
