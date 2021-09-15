@@ -6,9 +6,11 @@
     listen_addr: "0.0.0.0"
     consul_ver: 1.9.3
     consul_storgae_dir: /opt/consul
-    # bind_addr: "\"{{ GetPrivateIP }}\""
+    consul_user: "root"
+    consul_group: "root"
     https_port: 8501
     grpc_port: 8502
+    
 
   tasks:
     - name: Install Dependencies
@@ -30,8 +32,8 @@
         src: "{{ consul_download.dest }}"
         dest: /usr/local/bin
         copy: no
-        owner: root
-        group: root
+        owner: "{{ consul_user }}"
+        group: "{{ consul_group }}"
         mode: 0755
       become: true
 
@@ -39,8 +41,8 @@
       file:
         path: "{{ consul_config_dir }}"
         state: directory
-        owner: root
-        group: root
+        owner: "{{ consul_user }}"
+        group: "{{ consul_group }}"
         mode: 0644
       become: true
 
@@ -48,8 +50,8 @@
       file:
         path: "{{ consul_storgae_dir }}"
         state: directory
-        owner: root
-        group: root
+        owner: "{{ consul_user }}"
+        group: "{{ consul_group }}"
         mode: 0644
       become: true
 
@@ -57,16 +59,16 @@
       template:
         src: consul.hcl.j2
         dest: "{{ consul_config_dir }}/consul.hcl"
-        owner: root
-        group: root
+        owner: "{{ consul_user }}"
+        group: "{{ consul_group }}"
       become: true
 
     - name: Setup service
       template:
         src: consul.service.j2
         dest: /etc/systemd/system/consul.service
-        owner: root
-        group: root
+        owner: "{{ consul_user }}"
+        group: "{{ consul_group }}"
       become: true
 
     - name: system.d deamon reload

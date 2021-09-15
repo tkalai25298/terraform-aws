@@ -3,6 +3,10 @@
   hosts: all
   vars:
     redis_config_dir: "/etc/redis"
+    redis_user: "root"
+    redis_group: "root"
+    # redis_password: "nBK46Pf7v4sqKTCF"
+    # redis_port: 6379
 
   tasks:
     - name: Install redis
@@ -12,47 +16,29 @@
         update_cache: yes
       become: true
 
-    # - name: Checking redis server started
-    #   service: name=redis-server state=started enabled=yes
-    #   become: true
+    - name: Checking redis server started
+      service: 
+        name: redis-server 
+        state: started 
+        enabled: yes
+      become: true
 
-    # - name: changing redis configuration
-    #   template: src=redis.conf.j2 dest=/etc/redis/redis.conf owner=root group=root mode=0644
-    #   become: true
-      # notify: Redis Service Restart
+    - name: changing redis configuration
+      template:
+        src: redis-conf.j2 
+        dest: "{{ redis_config_dir }}/redis.conf"
+        owner: "{{ redis_user }}" 
+        group: "{{ redis_group }}" 
+        mode: 0644
+      become: true
+      notify: Redis Restart
 
-  # handlers:
+  handlers:
 
-  #   - name: Redis Service Restart
-  #     service: name=redis-server state=restarted enabled=yes
-  #     become: true
+    - name: Redis Restart
+      service: 
+        name: redis-server 
+        state: restarted 
+        enabled: yes
+      become: true
  
-    # - name: Redis config directory
-    #   file:
-    #     path: "{{ redis_config_dir }}"
-    #     state: directory
-    #     owner: root
-    #     group: root
-    #     mode: 0644
-    #   become: true
-
-    # - name: Template redis config
-    #   template:
-    #     src: redis.hcl.j2
-    #     dest: "{{ redis_config_dir }}/redis.conf"
-    #     owner: root
-    #     group: root
-    #   become: true
-
-    # - name: Setup service
-    #   template:
-    #     src: redis.service.j2
-    #     dest: /lib/systemd/system/redis-server.service
-    #     owner: root
-    #     group: root
-    #   become: true
-
-    # - name: system.d deamon reload
-    #   systemd:
-    #     daemon_reload: true
-    #   become: true
